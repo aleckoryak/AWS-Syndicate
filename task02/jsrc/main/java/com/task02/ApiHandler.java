@@ -9,12 +9,14 @@ import com.syndicate.deployment.model.RetentionSetting;
 
 import org.json.JSONObject;
 
+import java.util.Collections;
+
 @LambdaHandler(
-    lambdaName = "hello_world",
-	roleName = "hello_world-role",
-	isPublishVersion = true,
-	aliasName = "${lambdas_alias_name}",
-	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
+		lambdaName = "hello_world",
+		roleName = "hello_world-role",
+		isPublishVersion = false,
+//		aliasName = "${lambdas_alias_name}",
+		logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 	@Override
@@ -22,26 +24,22 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 		String path = requestEvent.getPath();
 		String httpMethod = requestEvent.getHttpMethod();
 
-		if ("/hello".equals(path) && "GET".equals(httpMethod)) {
-			return new APIGatewayProxyResponseEvent()
-					.withStatusCode(200)
-					.withBody(
-							new JSONObject().put(
-									"message",
-									"Hello from Lambda"
-							).toString()
-					);
-		} else {
-			return new APIGatewayProxyResponseEvent()
-					.withStatusCode(400)
+		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+		response.setHeaders(Collections.singletonMap("Content-Type", "application/json"));
 
-					.withBody(
-							new JSONObject().put(
-									"message",
-									"Bad request syntax or unsupported method. Request path: %s. HTTP method: %s"
-									.formatted(path, httpMethod)
-							).toString()
-					);
+		if ("/hello".equals(path) && "GET".equals(httpMethod)) {
+			JSONObject responseBody = new JSONObject()
+					.put("message", "Hello from Lambda");
+			response.withStatusCode(200)
+					.withBody(responseBody.toString());
+		} else {
+			String errorMessage = String.format("Bad request syntax or unsupported method. Request path: %s. HTTP method: %s", path, httpMethod);
+			JSONObject responseBody = new JSONObject()
+					.put("error", errorMessage);
+			response.withStatusCode(400)
+					.withBody(responseBody.toString());
 		}
+
+		return response;
 	}
 }

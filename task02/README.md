@@ -19,6 +19,9 @@ The Goal Of This Task is...
 ```
 Where {path} is the endpoint the request was made to, and {method} is the HTTP method used.
 
+
+based on https://github.com/epam/aws-syndicate/blob/master/examples/java/demo-apigateway-cognito/jsrc/main/java/com/demoapigatewaycognito/ApiHandler.java
+
 ### Notice
 All the technical details described below are actual for the particular
 version, or a range of versions of the software.
