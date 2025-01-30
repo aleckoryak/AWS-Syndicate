@@ -41,7 +41,30 @@ Lambda feature overview.
 ---
 
 ## Deployment from scratch
-1. action 1 to deploy the software
-2. action 2
-...
+cd ./aws_deep_dive/AWS-Syndicate
+syndicate generate project --name task01
+cd ./task01
+
+syndicate generate config --name "dev" ......
+
+
+setx SDCT_CONF c:\projects\aws_deep_dive\AWS-Syndicate\task01\.syndicate-config-dev
+OR 
+setx SDCT_CONF "C:\projects\aws_deep_dive\AWS-Syndicate\task01\.syndicate-config-dev"
+echo $env:SDCT_CONF
+	
+	
+	
+syndicate generate lambda --name hello_world  --runtime java
+    update code
+	
+syndicate create_deploy_target_bucket
+	
+syndicate build
+	
+https://aleckoryak:{TOKEN}@github.com/aleckoryak/AWS-Syndicate.git
+	
+syndicate deploy
+	
+syndicate clean
 
