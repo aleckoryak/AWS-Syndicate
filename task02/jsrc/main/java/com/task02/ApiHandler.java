@@ -15,7 +15,7 @@ import java.util.Collections;
 		lambdaName = "hello_world",
 		roleName = "hello_world-role",
 		isPublishVersion = false,
-//		aliasName = "${lambdas_alias_name}",
+		aliasName = "${lambdas_alias_name}",
 		logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
