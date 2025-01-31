@@ -21,7 +21,7 @@ Where {path} is the endpoint the request was made to, and {method} is the HTTP m
 
 
 based on https://github.com/epam/aws-syndicate/blob/master/examples/java/demo-apigateway-cognito/jsrc/main/java/com/demoapigatewaycognito/ApiHandler.java
-
+https://github.com/epam/aws-syndicate/wiki
 ### Notice
 All the technical details described below are actual for the particular
 version, or a range of versions of the software.
@@ -71,14 +71,14 @@ echo $env:SDCT_CONF
 
 syndicate generate lambda --name hello_world  --runtime java
 update code
-
+syndicate generate lambda_layer --name hello_world --link_with_lambda hello_world --runtime java
 syndicate create_deploy_target_bucket
 
-syndicate build
+syndicate build -F -b task02_250130.133916 
 
 https://aleckoryak:{TOKEN}@github.com/aleckoryak/AWS-Syndicate.git
 
-syndicate deploy
+syndicate deploy --replace_output -b task02_250130.133916
 
 syndicate clean
 
