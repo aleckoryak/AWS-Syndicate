@@ -48,11 +48,11 @@ public class ApiHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
 
 
             if ("/hello".equals(path) && "GET".equals(httpMethod)) {
-                JSONObject responseBody = new JSONObject().put("message", "Hello from Lambda");
+                JSONObject responseBody = new JSONObject().put("statusCode", 200).put("message", "Hello from Lambda");
                 return builder.withStatusCode(200).withBody(responseBody.toString()).build();
             } else {
                 String errorMessage = String.format("Bad request syntax or unsupported method. Request path: %s. HTTP method: %s", path, httpMethod);
-                JSONObject responseBody = new JSONObject().put("message", errorMessage);
+                JSONObject responseBody = new JSONObject().put("statusCode", 400).put("message", errorMessage);
                 return builder.withStatusCode(400).withBody(responseBody.toString()).build();
             }
         } catch (Exception e) {
