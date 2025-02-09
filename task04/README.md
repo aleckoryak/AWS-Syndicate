@@ -73,11 +73,29 @@ Modify the Lambda function configuration to be triggered by the SQS queue using 
 
 In the Lambda function code, implement the logic to print the content of the SQS message to CloudWatch Logs.
 
-TODO
-TODO
-TODO
+7. Generate 'SNS Handler' Lambda Function:
 
-5. Build and Deploy Project with the Syndicate Tool:
+Inside your project, use aws-syndicate to generate a Lambda function named 'SNS Handler'.
+```powershell
+syndicate generate lambda --name sns_handler  --runtime java
+```
+
+8. Generate SNS Topic Resource in Meta:
+
+Use aws-syndicate to generate [metadata for an SNS topic resource](https://github.com/epam/aws-syndicate/wiki/4.-Resources-Meta-Descriptions#46-sns-topic).
+```powershell
+syndicate generate meta sns_topic --resource_name lambda_topic --region eu-central-1
+```
+9. Configure Lambda to be Triggered by the Topic:
+
+Modify the Lambda function configuration to be triggered by the SNS topic.
+
+10. Implement the Logic of the 'SNS Handler' Function:
+
+In the Lambda function code, implement the logic to print the content of the SNS message to CloudWatch Logs
+
+
+11. Build and Deploy Project with the Syndicate Tool:
 
 Use the aws-syndicate tool to [build and deploy your project](https://github.com/epam/aws-syndicate/wiki/2.-Quick-start#231-create-an-s3-bucket-for-aws-syndicate-artifacts). This step packages and deploys your Lambda function along with the configured API Gateway.
 ```powershell
@@ -92,3 +110,9 @@ syndicate build -F -b task04_250209.133000
 ```powershell
 syndicate deploy --replace_output -b task04_250209.133000
 ```
+
+12. Verification
++ Use the AWS SQS Console or CLI to send a message to the configured SQS queue.
++ Check CloudWatch Logs to ensure that the 'SQS Handler' Lambda flushes the message content.
++ Use the AWS SNS Console or CLI to send a message to the configured SNS topic.
++ Check CloudWatch Logs to ensure that the 'SNS Handler' Lambda flushes the message content.
