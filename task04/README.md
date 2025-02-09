@@ -65,14 +65,17 @@ Use aws-syndicate to [generate metadata for an SQS queue resource](https://githu
 ```powershell
 syndicate generate meta sqs_queue --resource_name async_queue --region eu-central-1
 ```
+5. Configure Lambda to be Triggered by the Queue:
 
-```powershell
-syndicate generate meta api_gateway_resource --api_name task3_api --path hello
-```
+Modify the Lambda function configuration to be triggered by the SQS queue using Syndicate. the ootb https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSLambdaSQSQueueExecutionRole.html shoold be added
 
-```powershell
-syndicate generate meta api_gateway_resource_method --api_name task3_api --path hello --method GET --integration_type lambda --lambda_name hello_world --lambda_region eu-central-1
-```
+6. Implement the Logic of the 'SQS Handler' Function:
+
+In the Lambda function code, implement the logic to print the content of the SQS message to CloudWatch Logs.
+
+TODO
+TODO
+TODO
 
 5. Build and Deploy Project with the Syndicate Tool:
 
@@ -83,9 +86,9 @@ syndicate create_deploy_target_bucket
 
 + [Build](https://videoportal.epam.com/video/qYLn4xd7) the artifacts of the application and create a bundle:
 ```powershell
-syndicate build -F -b task03_250208.225707
+syndicate build -F -b task04_250209.133000
 ```
 + [Deploy](https://videoportal.epam.com/video/AaZWOPjY) the bundle:
 ```powershell
-syndicate deploy --replace_output -b task03_250208.225707
+syndicate deploy --replace_output -b task04_250209.133000
 ```

@@ -46,7 +46,7 @@ syndicate generate project --name task03
 
 + Navigate to task03 folder
 ```powershell
-cd .\task3\
+cd .\task03\
 ```
 * Use aws-syndicate to generate a [config for your project](https://github.com/epam/aws-syndicate/wiki/2.-Quick-start#222-creating-configuration-files-for-environment3. ).
 This will set up configuration files syndicate.yml and syndicate_aliases.yml that may be edited later.
