@@ -3,6 +3,7 @@ package com.task05;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.amazonaws.services.dynamodbv2.model.PutItemResult;
@@ -68,14 +69,15 @@ public class ApiHandler implements RequestHandler<Object, APIGatewayV2HTTPRespon
             String createdAt = Instant.now().toString();
 
             // Prepare item for DynamoDB
-            Map<String, AttributeValue> item = new HashMap<>();
-            item.put("id", new AttributeValue(eventId));
-            item.put("principalId", new AttributeValue().withN(principalId.toString()));
-            item.put("createdAt", new AttributeValue(createdAt));
-            item.put("body", new AttributeValue(objectMapper.writeValueAsString(content)));
+            Item item = new Item();
+            item.withString("id", eventId);
+            item.withInt("principalId", principalId);
+            item.withString("createdAt", createdAt);
+            item.withMap("body", content);
+
 
             // Save item to DynamoDB
-            PutItemRequest putItemRequest = new PutItemRequest().withTableName(System.getenv("table")).withItem(item);
+            PutItemRequest putItemRequest = new PutItemRequest().withTableName(System.getenv("table")).withItem(ItemUtils.toAttributeValues(item));
             PutItemResult putItemResult = dynamoDB.putItem(putItemRequest);
 
             logger.log("putItemResult:" + putItemResult.toString());
