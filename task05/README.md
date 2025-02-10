@@ -129,3 +129,12 @@ syndicate deploy --replace_output -b task05_250209.191131
 + Check CloudWatch Logs to ensure that the 'SQS Handler' Lambda flushes the message content.
 + Use the AWS SNS Console or CLI to send a message to the configured SNS topic.
 + Check CloudWatch Logs to ensure that the 'SNS Handler' Lambda flushes the message content.
+
+```
+curl --location 'https://iy1e97ro6a.execute-api.eu-central-1.amazonaws.com/api/events' \
+--header 'Content-Type: application/json' \
+--data '{
+    "principalId": 1,
+    "content": {"name": "cmtr-2fa561ce", "surname": "Doe"} 
+}'
+```
