@@ -5,6 +5,7 @@
         {
           "Action": [
             "logs:CreateLogGroup",
+            "logs:CreateLogGroup",
             "logs:CreateLogStream",
             "logs:PutLogEvents",
             "dynamodb:GetItem",
@@ -14,7 +15,12 @@
             "dynamodb:DeleteItem",
             "ssm:PutParameter",
             "ssm:GetParameter",
-            "kms:Decrypt"
+            "kms:Decrypt",
+            "appsync:Create*",
+            "appsync:Update*",
+            "appsync:Delete*",
+            "appsync:Get*",
+            "appsync:List*"
           ],
           "Effect": "Allow",
           "Resource": "*"

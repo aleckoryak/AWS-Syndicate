@@ -4,9 +4,9 @@
 
 type Event {
   id: ID!
-  userId: Int
+  userId: Int!
   createdAt: AWSDateTime!
-  payLoad: AWSJSON
+  payLoad: AWSJSON!
 }
 
 type Mutation {

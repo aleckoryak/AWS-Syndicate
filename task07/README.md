@@ -243,3 +243,17 @@ syndicate deploy --replace_output -b task07_250210.171007
 + Use your chosen API client (Postman, Altair) to send a query with the required payload.
 + Verify that the response matches the expected output.
 + Check the DynamoDB table to ensure the event is stored.
+
+
+```
+curl --location 'https://hpc5flgzujaeva5hirsd4k2ilq.appsync-api.eu-central-1.amazonaws.com/graphql' \
+--header 'x-api-key: da2-7w6amddx6vfmhcqqoe3opglphi' \
+--header 'Content-Type: application/json' \
+--data '{
+  "query": "mutation createEvent($userId: Int!, $payLoad: AWSJSON!) { createEvent(userId: $userId, payLoad: $payLoad) { id createdAt } }",
+  "variables": {
+    "userId": 123,
+    "payLoad": "{\"meta\": {\"key1\": 1, \"key2\": \"test_value\"}}"
+  }
+}'
+```
