@@ -197,7 +197,7 @@ syndicate generate appsync resolver --api_name GraphQL_API --kind UNIT --type_na
 ```
 
 ```powershell
-syndicate generate appsync resolver --api_name GraphQL_API --kind UNIT --type_name Query --field_name getEvent --data_source_name dynamoDB_EVENTS --runtime VTL
+syndicate generate appsync resolver --api_name GraphQL_API --kind UNIT --type_name Query --field_name getEvent --data_source_name dynamoDB_EVENTS --runtime JS
 ```
 
 6. Define resolvers code/mapping templates
@@ -256,4 +256,18 @@ curl --location 'https://hpc5flgzujaeva5hirsd4k2ilq.appsync-api.eu-central-1.ama
     "payLoad": "{\"meta\": {\"key1\": 1, \"key2\": \"test_value\"}}"
   }
 }'
+```
+
+
+```
+curl --location 'https://otlnivx5zzgrzexqrrzgbhznri.appsync-api.eu-central-1.amazonaws.com/graphql' \
+--header 'x-api-key: da2-63at7wivarh2vbuen7zth25hku' \
+--header 'Content-Type: application/json' \
+--data '{
+  "query": "query getEvent($id: ID!) { getEvent(id: $id) { id userId createdAt payLoad  } }",
+  "variables": {
+    "id": "742d42b8-0e40-4913-a779-4c3100abf264"
+  }
+}'
+
 ```
