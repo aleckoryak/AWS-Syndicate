@@ -23,6 +23,8 @@
 ##   }
 ## }
 
+#set($debug = $util.log("Received userId:", $ctx.args.userId))
+#set($debug = $util.log("Received payLoad:", $ctx.args.payLoad))
 
     {
         "version" : "2018-05-29",
@@ -33,6 +35,6 @@
         "attributeValues" : {
         	"userId": $util.dynamodb.toDynamoDBJson($ctx.args.userId),
         	"createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
-        	"payload": $util.dynamodb.toDynamoDBJson($ctx.args.payLoad),
+        	"payLoad": $util.dynamodb.toDynamoDBJson($ctx.args.payLoad)
         }
     }
