@@ -84,6 +84,11 @@ Use aws-syndicate to [generate CloudWatch Rule resource description](https://git
 ```powershell
 syndicate generate meta cloudwatch_event_rule --resource_name uuid_trigger --rule_type schedule --expression "cron(* * ? * * *)"
 ```
+
+6. Implement the Logic of the Function:
+
+In the Lambda function code, implement the logic to generate 10 random UUIDs and store them in an S3 bucket within a new file. Include the execution start time in the file name.
+
 ---
 
 ### Build and Deploy Project with the Syndicate Tool:
@@ -95,11 +100,11 @@ syndicate create_deploy_target_bucket
 
 + [Build](https://videoportal.epam.com/video/qYLn4xd7) the artifacts of the application and create a bundle:
 ```powershell
-syndicate build -F -b task06_250210.135323
+syndicate build -F -b task08_250210.234925
 ```
 + [Deploy](https://videoportal.epam.com/video/AaZWOPjY) the bundle:
 ```powershell
-syndicate deploy --replace_output -b task06_250210.135323
+syndicate deploy --replace_output -b task08_250210.234925
 ```
 
 ---
