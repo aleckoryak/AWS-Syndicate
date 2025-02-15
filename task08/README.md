@@ -64,7 +64,7 @@ syndicate generate config --name "dev" `
   $env:SDCT_CONF = "C:\projects\aws_deep_dive\AWS-Syndicate\task08\.syndicate-config-dev"
   echo $env:SDCT_CONF
 ```
-3. Generate 'audit_producer' Lambda Function:
+3. Generate 'uuid_generator' Lambda Function:
 
 Inside your project, use aws-syndicate to [generate a Lambda function](https://github.com/epam/aws-syndicate/wiki/2.-Quick-start#224-creating-lambda-files). This step will create the necessary files and configurations
 ```powershell
