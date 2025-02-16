@@ -130,14 +130,15 @@ syndicate generate lambda --name  api_handler  --runtime java
 ```powershell
 syndicate generate lambda_layer --name weather-service-layer --runtime java --link_with_lambda api_handler
 ```
-
 !!! Generation of lambda layer for Java runtime is currently unsupported. A layer for lambda with Java runtime can be added to the project by using the annotation '@LambdaLayer'.
 
++ create additional maven project lambda-layer
+```powershell
+mvn clean package 
+```
+
+
 6. Implement the Logic of the Function:
-
-In the Lambda function code, implement the logic to generate 10 random UUIDs and store them in an S3 bucket within a new file. Include the execution start time in the file name.
-
-7. Implement the Logic of the Function:
 
 + In the Lambda function code, import and employ the Open-Meteo API library from the Lambda Layer to fetch the most recent weather forecast.
 

@@ -15,8 +15,7 @@
             "ssm:PutParameter",
             "ssm:GetParameter",
             "kms:Decrypt",
-            "sts:AssumeRole",
-            "iam:CreateRole"
+            "sts:AssumeRole"
           ],
           "Effect": "Allow",
           "Resource": "*"

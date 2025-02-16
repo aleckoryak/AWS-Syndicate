@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.layer.WeatherService;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaLayer;
 import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
@@ -26,17 +27,17 @@ import java.util.Map;
 	layers = {"weather-service-layer"},
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
-
-@LambdaLayer(
-		layerName = "weather-service-layer",
-		libraries = {"weather-forecast-1.0-SNAPSHOT.jar"},
-		runtime = DeploymentRuntime.JAVA11,
-		artifactExtension = ArtifactExtension.ZIP
-)
 @LambdaUrlConfig(
 		authType = AuthType.NONE,
 		invokeMode = InvokeMode.BUFFERED
 )
+@LambdaLayer(
+		layerName = "weather-service-layer",
+		libraries = {"weather-service-1.0.0.jar"},
+		runtime = DeploymentRuntime.JAVA11,
+		artifactExtension = ArtifactExtension.ZIP
+)
+
 public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 	private final WeatherService weatherService = new WeatherService();
 
