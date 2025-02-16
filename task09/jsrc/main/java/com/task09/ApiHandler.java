@@ -1,9 +1,12 @@
 package com.task09;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.layer.WeatherService;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaLayer;
@@ -14,10 +17,12 @@ import com.syndicate.deployment.model.DeploymentRuntime;
 import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.syndicate.deployment.model.lambda.url.InvokeMode;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @LambdaHandler(
     lambdaName = "api_handler",
@@ -38,28 +43,38 @@ import java.util.Map;
 		artifactExtension = ArtifactExtension.ZIP
 )
 
-public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class ApiHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 	private final WeatherService weatherService = new WeatherService();
 
-	@Override
-	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-		try {
-			// Retrieve weather data
-			String weatherData = weatherService.getWeatherData(52.52, 13.41); // Berlin, Germany
 
-			// Set up the successful response
-			response.setStatusCode(200);
-			response.setBody(weatherData);
-		} catch (IOException e) {
-			response.setStatusCode(500);
-			response.setBody("Error: " + e.getMessage());
+	@Override
+	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent requestEvent, Context context) {
+		APIGatewayV2HTTPResponse.APIGatewayV2HTTPResponseBuilder builder = APIGatewayV2HTTPResponse.builder();
+		try {
+			LambdaLogger logger = context.getLogger();
+			logger.log("Received event: " + requestEvent.toString());
+			logger.log("requestEvent.getRequestContext: " + requestEvent.getRequestContext().toString());
+			logger.log("requestEvent.getPath(): " + requestEvent.getRawPath());
+			String path = requestEvent.getRawPath();
+			String httpMethod = (requestEvent.getRequestContext() != null && requestEvent.getRequestContext().getHttp().getMethod() != null) ?
+					requestEvent.getRequestContext().getHttp().getMethod() : null;
+
+			// Retrieve weather data
+			 // Berlin, Germany
+			if ("/weather".equals(path) && "GET".equals(httpMethod)) {
+				String weatherData = weatherService.getWeatherData(52.52, 13.41);
+				return builder.withStatusCode(200).withBody(weatherData).build();
+			} else {
+				String errorMessage = String.format("Bad request syntax or unsupported method. Request path: %s. HTTP method: %s", path, httpMethod);
+				JSONObject responseBody = new JSONObject().put("statusCode", 400).put("message", errorMessage);
+				return builder.withStatusCode(400).withBody(responseBody.toString()).build();
+			}
+		} catch (Exception e) {
+			JSONObject responseBody = new JSONObject().put("error", "Internal Server Error");
+			return builder.withStatusCode(500).withBody(responseBody.toString()).build();
 		}
 
-		Map<String, String> headers = new HashMap<>();
-		headers.put("Content-Type", "application/json");
-		response.setHeaders(headers);
-
-		return response;
 	}
+
+
 }
