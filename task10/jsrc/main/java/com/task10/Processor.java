@@ -96,9 +96,16 @@ public class Processor implements RequestHandler<Object, Map<String, Object>> {
         // Processing hourly JSON object as a map
         JSONObject hourlyJson = jsonObject.getJSONObject("hourly");
         Map<String, AttributeValue> hourlyMap = new HashMap<>();
-        hourlyMap.put("time", AttributeValue.builder().s(hourlyJson.getJSONArray("time").toString()).build());
-        hourlyMap.put("temperature_2m", AttributeValue.builder().n(hourlyJson.getJSONArray("temperature_2m").toString()).build());
-
+        hourlyMap.put("time", AttributeValue.builder().l(
+                hourlyJson.getJSONArray("time").toList().stream()
+                        .map(times -> AttributeValue.builder().s(times.toString()).build())
+                        .collect(Collectors.toList())
+        ).build());
+        hourlyMap.put("temperature_2m", AttributeValue.builder().l(
+                hourlyJson.getJSONArray("temperature_2m").toList().stream()
+                        .map(temp -> AttributeValue.builder().n(temp.toString()).build())
+                        .collect(Collectors.toList())
+        ).build());
 
         // Processing hourly_units JSON object as a map
         JSONObject hourlyUnitsJson = jsonObject.getJSONObject("hourly_units");
