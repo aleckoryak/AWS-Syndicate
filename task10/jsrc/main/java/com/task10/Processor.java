@@ -3,15 +3,14 @@ package com.task10;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.syndicate.deployment.annotations.EventSource;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
 import com.syndicate.deployment.annotations.resources.DependsOn;
-import com.syndicate.deployment.model.EventSourceType;
 import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
+import com.syndicate.deployment.model.TracingMode;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.syndicate.deployment.model.lambda.url.InvokeMode;
 import org.apache.http.HttpResponse;
@@ -37,6 +36,7 @@ import java.util.UUID;
         roleName = "processor-role",
         isPublishVersion = true,
         aliasName = "${lambdas_alias_name}",
+        tracingMode = TracingMode.Active,
         logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @LambdaUrlConfig(
@@ -49,9 +49,10 @@ import java.util.UUID;
         @EnvironmentVariable(key = "table", value = "${target_table}")
 }
 )
+
 public class Processor implements RequestHandler<Object, Map<String, Object>> {
     private static final String BASE_URL = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m";
-    private DynamoDbClient dbClient = DynamoDbClient.builder()
+    private final DynamoDbClient dbClient = DynamoDbClient.builder()
             .credentialsProvider(DefaultCredentialsProvider.create())
             .region(Region.EU_CENTRAL_1) //set your region
             .build();
@@ -78,9 +79,6 @@ public class Processor implements RequestHandler<Object, Map<String, Object>> {
         return resultMap;
     }
 
-
-
-
     private String getWeatherData() throws IOException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(BASE_URL);
@@ -89,7 +87,7 @@ public class Processor implements RequestHandler<Object, Map<String, Object>> {
         }
     }
 
-    private void storeWeatherData( JSONObject jsonObject) throws DynamoDbException{
+    private void storeWeatherData(JSONObject jsonObject) throws DynamoDbException {
 
         // Prepare item values
         Map<String, AttributeValue> itemValues = new HashMap<>();

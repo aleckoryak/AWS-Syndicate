@@ -70,6 +70,7 @@
                 <directory>${resources.dir}</directory>
             </resource>
         </resources>
+
         <plugins>
             <plugin>
                 <groupId>net.sf.aws-syndicate</groupId>
