@@ -103,11 +103,11 @@ syndicate create_deploy_target_bucket
 
 + [Build](https://videoportal.epam.com/video/qYLn4xd7) the artifacts of the application and create a bundle:
 ```powershell
-syndicate build -F -b task09_250214.111138
+syndicate build -F -b task10_250217.122353
 ```
 + [Deploy](https://videoportal.epam.com/video/AaZWOPjY) the bundle:
 ```powershell
-syndicate deploy --replace_output -b task09_250214.111138
+syndicate deploy --replace_output -b task10_250217.122353
 ```
 
 ---
