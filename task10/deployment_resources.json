@@ -8,6 +8,7 @@
             "logs:CreateLogGroup",
             "logs:CreateLogStream",
             "logs:PutLogEvents",
+            "logs:DeleteLogGroup",
             "dynamodb:GetItem",
             "dynamodb:Query",
             "dynamodb:PutItem",

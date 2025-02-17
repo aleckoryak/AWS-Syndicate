@@ -26,10 +26,12 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @LambdaHandler(
         lambdaName = "processor",
@@ -88,34 +90,79 @@ public class Processor implements RequestHandler<Object, Map<String, Object>> {
     }
 
     private void storeWeatherData(JSONObject jsonObject) throws DynamoDbException {
-
-        // Prepare item values
         Map<String, AttributeValue> itemValues = new HashMap<>();
-        itemValues.put("id", AttributeValue.builder()
-                .s(UUID.randomUUID().toString())
-                .build());
-        JSONObject forecast = new JSONObject();
-        forecast.put("elevation", jsonObject.getDouble("elevation"));
-        forecast.put("generationtime_ms", jsonObject.getDouble("generationtime_ms"));
-        forecast.put("hourly", jsonObject.getJSONObject("hourly").toString());
-        forecast.put("hourly_units", jsonObject.getJSONObject("hourly_units").toString());
-        forecast.put("latitude", jsonObject.getDouble("latitude"));
-        forecast.put("longitude", jsonObject.getDouble("longitude"));
-        forecast.put("timezone", jsonObject.getString("timezone"));
-        forecast.put("timezone_abbreviation", jsonObject.getString("timezone_abbreviation"));
-        forecast.put("utc_offset_seconds", jsonObject.getInt("utc_offset_seconds"));
+        itemValues.put("id", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
 
-        itemValues.put("forecast", AttributeValue.builder()
-                .s(forecast.toString())
-                .build());
+        // Processing hourly JSON object as a map
+        JSONObject hourlyJson = jsonObject.getJSONObject("hourly");
+        Map<String, AttributeValue> hourlyMap = new HashMap<>();
+        hourlyMap.put("time", AttributeValue.builder().s(hourlyJson.getJSONArray("time").toString()).build());
+        hourlyMap.put("temperature_2m", AttributeValue.builder().n(hourlyJson.getJSONArray("temperature_2m").toString()).build());
 
-        // Put the item into the DynamoDB table
+
+        // Processing hourly_units JSON object as a map
+        JSONObject hourlyUnitsJson = jsonObject.getJSONObject("hourly_units");
+        Map<String, AttributeValue> hourlyUnitsMap = new HashMap<>();
+        hourlyUnitsMap.put("time", AttributeValue.builder().s(hourlyUnitsJson.getString("time")).build());
+        hourlyUnitsMap.put("temperature_2m", AttributeValue.builder().s(hourlyUnitsJson.getString("temperature_2m")).build());
+
+
+        // Prepare other attributes
+        Map<String, AttributeValue> forecastMap = new HashMap<>();
+        forecastMap.put("elevation", AttributeValue.builder().n(String.valueOf(jsonObject.getDouble("elevation"))).build());
+        forecastMap.put("generationtime_ms", AttributeValue.builder().n(String.valueOf(jsonObject.getDouble("generationtime_ms"))).build());
+        forecastMap.put("latitude", AttributeValue.builder().n(String.valueOf(jsonObject.getDouble("latitude"))).build());
+        forecastMap.put("longitude", AttributeValue.builder().n(String.valueOf(jsonObject.getDouble("longitude"))).build());
+        forecastMap.put("timezone", AttributeValue.builder().s(jsonObject.getString("timezone")).build());
+        forecastMap.put("timezone_abbreviation", AttributeValue.builder().s(jsonObject.getString("timezone_abbreviation")).build());
+        forecastMap.put("utc_offset_seconds", AttributeValue.builder().n(String.valueOf(jsonObject.getInt("utc_offset_seconds"))).build());
+        forecastMap.put("hourly", AttributeValue.builder().m(hourlyMap).build());
+        forecastMap.put("hourly_units", AttributeValue.builder().m(hourlyUnitsMap).build());
+
+        // Adding forecast map to item values
+        itemValues.put("forecast", AttributeValue.builder().m(forecastMap).build());
+
+        String tableName = System.getenv("table");
+        if (tableName == null) {
+            throw new IllegalStateException("Table name environment variable 'table' is not set");
+        }
+
         PutItemRequest request = PutItemRequest.builder()
-                .tableName(System.getenv("table"))
+                .tableName(tableName)
                 .item(itemValues)
                 .build();
 
         dbClient.putItem(request);
+        System.out.println("Item inserted successfully!");
 
     }
 }
+
+
+/*
+
+        Map<String, AttributeValue> forecast = new HashMap<>();
+        forecast.put("elevation", new AttributeValue().withN(String.valueOf(jsonObject.getDouble("elevation"))));
+        forecast.put("generationtime_ms", new AttributeValue().withN(String.valueOf(jsonObject.getDouble("generationtime_ms"))));
+        forecast.put("longitude", new AttributeValue().withN(String.valueOf(jsonObject.getDouble("longitude"))));
+        forecast.put("latitude", new AttributeValue().withN(String.valueOf(jsonObject.getDouble("latitude"))));
+        forecast.put("utc_offset_seconds", new AttributeValue().withN(String.valueOf(jsonObject.getDouble("utc_offset_seconds"))));
+        forecast.put("timezone_abbreviation", new AttributeValue().withS(jsonObject.getString("timezone_abbreviation")));
+        forecast.put("timezone", new AttributeValue().withS(String.valueOf("timezone")));
+
+        Map<String, AttributeValue> hourly = new HashMap<>();
+        jsonObject.getJSONObject("hourly").getJSONArray("time").forEach(time -> new AttributeValue().withS(time)).collect(Collectors.toList());
+        jsonObject.getJSONObject("hourly").getJSONArray("temperature_2m").forEach(time -> new AttributeValue().withN(time)).collect(Collectors.toList());
+
+        hourly.put("temperature_2m", jsonObject.getJSONObject("hourly").getJSONArray("time").forEach(time -> new AttributeValue().withS(time)).collect(Collectors.toList()));
+        hourly.put("time", jsonObject.getJSONObject("hourly").getJSONArray("temperature_2m").forEach(time -> new AttributeValue().withN(time)).collect(Collectors.toList()));
+        forecast.put("hourly", new AttributeValue().withM(hourly));
+
+        Map<String, AttributeValue> hourlyUnits = new HashMap<>();
+
+        hourlyUnits.put("temperature_2m", new AttributeValue().withS(jsonObject.getJSONObject("hourly_units").getString("temperature_2m")));
+        hourlyUnits.put("time", new AttributeValue().withS(jsonObject.getJSONObject("hourly_units").getString("time")));
+
+        forecast.put("hourly_units", new AttributeValue().withM(hourlyUnits));
+        itemValues.put("forecast", new AttributeValue().withM(forecast));
+*/
