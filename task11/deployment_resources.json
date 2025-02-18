@@ -11,6 +11,7 @@
             "dynamodb:Query",
             "dynamodb:PutItem",
             "dynamodb:Batch*",
+            "dynamodb:Scan",
             "dynamodb:DeleteItem",
             "ssm:PutParameter",
             "ssm:GetParameter",
@@ -107,7 +108,7 @@
       "/tables": {
         "enable_cors": false,
         "POST": {
-          "enable_proxy" : true,
+          "enable_proxy": true,
           "authorization_type": "NONE",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
@@ -170,5 +171,25 @@
         ]
       }
     }
+  },
+  "Tables": {
+    "resource_type": "dynamodb_table",
+    "hash_key_name": "id",
+    "hash_key_type": "N",
+    "read_capacity": 1,
+    "write_capacity": 1,
+    "global_indexes": [],
+    "autoscaling": [],
+    "tags": {}
+  },
+  "Reservations": {
+    "resource_type": "dynamodb_table",
+    "hash_key_name": "reservationId",
+    "hash_key_type": "S",
+    "read_capacity": 1,
+    "write_capacity": 1,
+    "global_indexes": [],
+    "autoscaling": [],
+    "tags": {}
   }
 }

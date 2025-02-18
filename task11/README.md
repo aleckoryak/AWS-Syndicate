@@ -250,9 +250,10 @@ syndicate generate meta api_gateway_resource_method --api_name task11_api --path
 !!! in addition set "enable_proxy": true, to all generated methods
 
 4. Generate DynamoDB Metadata
-   Use aws-syndicate to [generate metadata for a DynamoDB](https://github.com/epam/aws-syndicate/wiki/4.-Resources-Meta-Descriptions#421-dynamo-db-table) table named 'Weather'.
+   Use aws-syndicate to [generate metadata for a DynamoDB](https://github.com/epam/aws-syndicate/wiki/4.-Resources-Meta-Descriptions#421-dynamo-db-table) table named 'Tables' with int id and Reservations with string(uuid) reservationId.
 ```powershell
-syndicate generate meta dynamodb --resource_name Weather --hash_key_name id --hash_key_type S
+syndicate generate meta dynamodb --resource_name Tables --hash_key_name id --hash_key_type N
+syndicate generate meta dynamodb --resource_name Reservations --hash_key_name reservationId --hash_key_type S
 ```
 
 5. Implement the Logic of the Function:
