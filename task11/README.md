@@ -220,10 +220,34 @@ syndicate generate lambda --name  api_handler  --runtime java
 syndicate generate meta cognito_user_pool --resource_name simple-booking-userpool
 ```
 5. Generate API Gateway Metadata
-
+   Use aws-syndicate to [generate API Gateway metadata](https://github.com/epam/aws-syndicate/wiki/4.-Resources-Meta-Descriptions#45-api-gateway) that includes the required API resources:
+```powershell
+syndicate generate meta api_gateway --resource_name task11_api --deploy_stage api
+```
 + Generate API Gateway authorizer metadata
+```powershell
+syndicate generate meta api_gateway_authorizer --api_name task11_api --name task11_api_gateway_authorizer --type COGNITO_USER_POOLS --provider_name simple-booking-userpool
+```
 + Generate API Gateway resources(paths) metadata
+```powershell
+syndicate generate meta api_gateway_resource --api_name task11_api --path signup --enable_cors false
+syndicate generate meta api_gateway_resource --api_name task11_api --path signin --enable_cors false
+syndicate generate meta api_gateway_resource --api_name task11_api --path tables --enable_cors false
+syndicate generate meta api_gateway_resource --api_name task11_api --path reservations  --enable_cors false
+
+```
 + Generate metadata for API Gateway resources methods
+```powershell
+syndicate generate meta api_gateway_resource_method --api_name task11_api --path signup --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
+syndicate generate meta api_gateway_resource_method --api_name task11_api --path signin --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
+
+syndicate generate meta api_gateway_resource_method --api_name task11_api --path tables --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
+syndicate generate meta api_gateway_resource_method --api_name task11_api --path tables --method GET --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
+
+syndicate generate meta api_gateway_resource_method --api_name task11_api --path reservations --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
+syndicate generate meta api_gateway_resource_method --api_name task11_api --path reservations --method GET --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
+```
+!!! in addition set "enable_proxy": true, to all generated methods
 
 4. Generate DynamoDB Metadata
    Use aws-syndicate to [generate metadata for a DynamoDB](https://github.com/epam/aws-syndicate/wiki/4.-Resources-Meta-Descriptions#421-dynamo-db-table) table named 'Weather'.
