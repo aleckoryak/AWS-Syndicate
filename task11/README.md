@@ -258,10 +258,6 @@ syndicate generate meta dynamodb --resource_name Reservations --hash_key_name re
 
 5. Implement the Logic of the Function:
 
-In the Lambda function code, implement the logic to pull the latest weather forecast from the Open-Meteo API and push it to DynamoDB.
-**To get the weather forecast please use this [URL](
-https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m)**
-
 ---
 
 ### Build and Deploy Project with the Syndicate Tool:
@@ -273,11 +269,11 @@ syndicate create_deploy_target_bucket
 
 + [Build](https://videoportal.epam.com/video/qYLn4xd7) the artifacts of the application and create a bundle:
 ```powershell
-syndicate build -F -b task10_250217.122353
+syndicate build -F -b task11_250219.103524
 ```
 + [Deploy](https://videoportal.epam.com/video/AaZWOPjY) the bundle:
 ```powershell
-syndicate deploy --replace_output -b task10_250217.122353
+syndicate deploy --replace_output -b task11_250219.103524
 ```
 
 ---
