@@ -25,7 +25,11 @@ import org.json.JSONObject;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_OK;
 
 /**
  * Created by Roman Ivanov on 7/20/2024.
@@ -55,17 +59,32 @@ public class PostSignUpHandler implements RequestHandler<APIGatewayProxyRequestE
                     .findAny()
                     .orElseThrow(() -> new RuntimeException("Sub not found."));
 
+            logger.log(String.format("PostSignUpHandler: User has been successfully signed up. userId: %s", userId));
+
+            Map<String, String> authParams = Map.of(
+                    "USERNAME", signUp.email(),
+                    "PASSWORD", signUp.password()
+            );
+
+            AdminInitiateAuthResponse adminInitiateAuthResponse = cognitoClient.adminInitiateAuth(AdminInitiateAuthRequest.builder()
+                    .authFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
+                    .authParameters(authParams)
+                    .userPoolId(userPoolId)
+                    .clientId(clientId)
+                    .build());
+
+            logger.log(String.format("PostSignUpHandler: idToken: %s accessToken: %s", adminInitiateAuthResponse.authenticationResult().idToken(),adminInitiateAuthResponse.authenticationResult().accessToken()));
 
             return new APIGatewayProxyResponseEvent()
-                    .withStatusCode(200)
-                    .withBody(new JSONObject()
-                            .put("message", "User has been successfully signed up.")
-                            .put("userId", userId)
-                            .toString());
+                    .withStatusCode(SC_OK).withBody("");
+//                    .withBody(new JSONObject()
+//                            .put("message", "User has been successfully signed up.")
+//                            .put("userId", userId)
+//                            .toString());
         } catch (Exception e) {
             logger.log("PostSignUpHandler: Error: " + e.getMessage());
             return new APIGatewayProxyResponseEvent()
-                    .withStatusCode(400)
+                    .withStatusCode(SC_BAD_REQUEST)
                     .withBody(new JSONObject().put("error", e.getMessage()).toString());
         }
     }
@@ -96,7 +115,7 @@ public class PostSignUpHandler implements RequestHandler<APIGatewayProxyRequestE
                                 .build())
                 .desiredDeliveryMediums(DeliveryMediumType.EMAIL)
                 .messageAction("SUPPRESS")
-                .forceAliasCreation(Boolean.FALSE)
+//                .forceAliasCreation(Boolean.FALSE)
                 .build()
         );
     }

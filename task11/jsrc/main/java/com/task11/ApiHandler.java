@@ -59,7 +59,7 @@ reservations_table: Reservations
 @EnvironmentVariables(value = {
         @EnvironmentVariable(key = "REGION", value = "${region}"),
         @EnvironmentVariable(key = "COGNITO_ID", value = "${booking_userpool}", valueTransformer = USER_POOL_NAME_TO_USER_POOL_ID),
-        @EnvironmentVariable(key = "CLIENT_ID", value = "client-app"),
+        @EnvironmentVariable(key = "CLIENT_ID", value = "${booking_userpool}", valueTransformer = USER_POOL_NAME_TO_CLIENT_ID),
         @EnvironmentVariable(key = "tables_table", value = "${tables_table}"),
         @EnvironmentVariable(key = "reservations_table", value = "${reservations_table}")
 })
@@ -80,7 +80,7 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         logger = context.getLogger();
-        logger.log("ver 22");
+        logger.log("ver 1.4");
         logger.log("RequestEvent: " + requestEvent);
         logger.log("Body: " + requestEvent.getBody());
         return getHandler(requestEvent)

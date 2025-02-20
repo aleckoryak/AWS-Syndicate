@@ -273,7 +273,9 @@ syndicate build -F -b task11_250219.103524
 ```
 + [Deploy](https://videoportal.epam.com/video/AaZWOPjY) the bundle:
 ```powershell
-syndicate deploy --replace_output -b task11_250219.103524
+syndicate deploy --replace_output -b task11_250219.103524 -types lambda
+
+syndicate update  --replace_output --force -b task11_250219.103524 -types lambda
 ```
 
 ---

@@ -70,3 +70,15 @@ syndicate generate config --name "dev" `
   $env:SDCT_CONF = "C:\projects\aws_deep_dive\AWS-Syndicate\task09\.syndicate-config-dev"
   echo $env:SDCT_CONF
 ```
+
++ export api_gateway configuration (only api_gateway)
+```shell
+syndicate export --resource_type api_gateway --dsl oas_v3 -output_dir .
+```
+
++ Observing the environment manipulation history
+```shell
+syndicate status 
+syndicate status --resources
+syndicate status --events
+```

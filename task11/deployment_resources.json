@@ -25,7 +25,9 @@
             "cognito-idp:ListUserPools",
             "cognito-idp:ListUserPoolClients",
             "cognito-idp:AdminRespondToAuthChallenge",
-            "cognito-idp:AdminConfirmSignUp"
+            "cognito-idp:AdminConfirmSignUp",
+            "lambda:UpdateFunctionCode",
+            "cloudwatch:GetMetricStatistics"
           ],
           "Effect": "Allow",
           "Resource": "*"
