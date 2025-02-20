@@ -49,38 +49,18 @@ public class PostSignUpHandler implements RequestHandler<APIGatewayProxyRequestE
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         logger = context.getLogger();
         try {
+            logger.log("PostSignUpHandler: " + requestEvent.getBody());
+            logger.log("PostSignUpHandler: userPoolId:" + userPoolId);
+            logger.log("PostSignUpHandler: clientId:" + clientId);
+
             SignUp signUp = SignUp.fromJson(requestEvent.getBody());
-
-            // sign up
-            String userId = cognitoSignUp(signUp)
-                    .user().attributes().stream()
-                    .filter(attr -> attr.name().equals("sub"))
-                    .map(AttributeType::value)
-                    .findAny()
-                    .orElseThrow(() -> new RuntimeException("Sub not found."));
-
-            logger.log(String.format("PostSignUpHandler: User has been successfully signed up. userId: %s", userId));
-
-            Map<String, String> authParams = Map.of(
-                    "USERNAME", signUp.email(),
-                    "PASSWORD", signUp.password()
-            );
-
-            AdminInitiateAuthResponse adminInitiateAuthResponse = cognitoClient.adminInitiateAuth(AdminInitiateAuthRequest.builder()
-                    .authFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
-                    .authParameters(authParams)
-                    .userPoolId(userPoolId)
-                    .clientId(clientId)
-                    .build());
-
-            logger.log(String.format("PostSignUpHandler: idToken: %s accessToken: %s", adminInitiateAuthResponse.authenticationResult().idToken(),adminInitiateAuthResponse.authenticationResult().accessToken()));
+            AdminCreateUserResponse adminCreateUserResponse = signUp(signUp);
+            logger.log("PostSignUpHandler: adminCreateUserResponse:" + adminCreateUserResponse);
+            AdminRespondToAuthChallengeResponse adminRespondToAuthChallengeResponse = confirmSignUp(signUp);
+            logger.log("PostSignUpHandler: adminRespondToAuthChallengeResponse:" + adminRespondToAuthChallengeResponse);
 
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(SC_OK).withBody("");
-//                    .withBody(new JSONObject()
-//                            .put("message", "User has been successfully signed up.")
-//                            .put("userId", userId)
-//                            .toString());
         } catch (Exception e) {
             logger.log("PostSignUpHandler: Error: " + e.getMessage());
             return new APIGatewayProxyResponseEvent()
@@ -89,25 +69,24 @@ public class PostSignUpHandler implements RequestHandler<APIGatewayProxyRequestE
         }
     }
 
-    protected AdminCreateUserResponse cognitoSignUp(SignUp signUp) {
-        logger.log("userPoolId:" + userPoolId);
-        logger.log("clientId:" + clientId);
+
+    protected AdminCreateUserResponse signUp(SignUp signUpRequest) {
         return cognitoClient.adminCreateUser(AdminCreateUserRequest.builder()
                 .userPoolId(userPoolId)
-                .username(signUp.email())
-                .temporaryPassword(signUp.password())
+                .username(signUpRequest.email())
+                .temporaryPassword(signUpRequest.password())
                 .userAttributes(
                         AttributeType.builder()
                                 .name("given_name")
-                                .value(signUp.firstName())
+                                .value(signUpRequest.firstName())
                                 .build(),
                         AttributeType.builder()
                                 .name("family_name")
-                                .value(signUp.lastName())
+                                .value(signUpRequest.lastName())
                                 .build(),
                         AttributeType.builder()
                                 .name("email")
-                                .value(signUp.email())
+                                .value(signUpRequest.email())
                                 .build(),
                         AttributeType.builder()
                                 .name("email_verified")
@@ -115,8 +94,40 @@ public class PostSignUpHandler implements RequestHandler<APIGatewayProxyRequestE
                                 .build())
                 .desiredDeliveryMediums(DeliveryMediumType.EMAIL)
                 .messageAction("SUPPRESS")
-//                .forceAliasCreation(Boolean.FALSE)
-                .build()
-        );
+                .forceAliasCreation(Boolean.FALSE)
+                .build());
+    }
+
+    protected AdminInitiateAuthResponse signIn(String email, String password) {
+        Map<String, String> authParams = new HashMap<>();
+        authParams.put("USERNAME", email);
+        authParams.put("PASSWORD", password);
+        return cognitoClient.adminInitiateAuth(AdminInitiateAuthRequest.builder()
+                .authFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
+                .authParameters(authParams)
+                .userPoolId(userPoolId)
+                .clientId(clientId)
+                .build());
+    }
+
+    protected AdminRespondToAuthChallengeResponse confirmSignUp(SignUp signUpRequest) {
+        AdminInitiateAuthResponse adminInitiateAuthResponse = signIn(signUpRequest.email(), signUpRequest.password());
+
+        if (!ChallengeNameType.NEW_PASSWORD_REQUIRED.name().equals(adminInitiateAuthResponse.challengeNameAsString())) {
+            throw new RuntimeException("unexpected challenge: " + adminInitiateAuthResponse.challengeNameAsString());
+        }
+
+        Map<String, String> challengeResponses = new HashMap<>();
+        challengeResponses.put("USERNAME", signUpRequest.email());
+        challengeResponses.put("PASSWORD", signUpRequest.password());
+        challengeResponses.put("NEW_PASSWORD", signUpRequest.password());
+
+        return cognitoClient.adminRespondToAuthChallenge(AdminRespondToAuthChallengeRequest.builder()
+                .challengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
+                .challengeResponses(challengeResponses)
+                .userPoolId(userPoolId)
+                .clientId(clientId)
+                .session(adminInitiateAuthResponse.session())
+                .build());
     }
 }

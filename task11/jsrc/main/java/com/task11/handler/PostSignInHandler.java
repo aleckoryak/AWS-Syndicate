@@ -56,7 +56,7 @@ public class PostSignInHandler implements RequestHandler<APIGatewayProxyRequestE
 
             String accessToken = cognitoSignIn(signIn.email(), signIn.password())
                     .authenticationResult()
-                    .accessToken();
+                    .idToken();
 
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(200)
