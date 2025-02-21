@@ -1,5 +1,7 @@
 package com.task11;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -17,9 +19,9 @@ import com.syndicate.deployment.model.RetentionSetting;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import com.syndicate.deployment.model.lambda.url.InvokeMode;
 import com.task11.dto.RouteKey;
-import com.task11.handler.PostSignInHandler;
-import com.task11.handler.PostSignUpHandler;
-import com.task11.handler.RouteNotImplementedHandler;
+import com.task11.handler.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
@@ -65,22 +67,27 @@ reservations_table: Reservations
 })
 public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private final CognitoIdentityProviderClient cognitoClient;
+    private final DynamoDB dynamoDB;
     private final Map<RouteKey, RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>> handlersByRouteKey;
     private final Map<String, String> headersForCORS;
     private final RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> routeNotImplementedHandler;
     private LambdaLogger logger;
+    private static final Logger logger2 = LoggerFactory.getLogger(ApiHandler.class);
 
     public ApiHandler() {
         this.cognitoClient = initCognitoClient();
+        this.dynamoDB = initDynamoDB();
+
         this.handlersByRouteKey = initHandlers();
         this.headersForCORS = initHeadersForCORS();
         this.routeNotImplementedHandler = new RouteNotImplementedHandler();
     }
 
+
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         logger = context.getLogger();
-        logger.log("ver 1.4");
+        logger.log("ver 1.5");
         logger.log("RequestEvent: " + requestEvent);
         logger.log("Body: " + requestEvent.getBody());
         return getHandler(requestEvent)
@@ -93,21 +100,32 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
     }
 
     private RouteKey getRouteKey(APIGatewayProxyRequestEvent requestEvent) {
-        logger.log("getRouteKey:" + "requestEvent.getHttpMethod()" + ":" + requestEvent.getPath());
-        return new RouteKey(requestEvent.getHttpMethod(), requestEvent.getPath());
+        logger.log(String.format("RouteKey: method %s, resource %s, path %s",requestEvent.getHttpMethod(), requestEvent.getResource(), requestEvent.getPath()));
+        return new RouteKey(requestEvent.getHttpMethod(), requestEvent.getResource());
     }
 
     private CognitoIdentityProviderClient initCognitoClient() {
+        logger2.info("initCognitoClient");
         return CognitoIdentityProviderClient.builder()
                 .region(Region.of(System.getenv("REGION")))
                 .credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
     }
 
+    private DynamoDB initDynamoDB() {
+        logger2.info("initDynamoDB");
+        return new DynamoDB(AmazonDynamoDBAsyncClientBuilder.standard().withRegion(System.getenv("REGION")).build());
+    }
+
     private Map<RouteKey, RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>> initHandlers() {
         return Map.of(
                 new RouteKey("POST", "/signup"), new PostSignUpHandler(cognitoClient),
-                new RouteKey("POST", "/signin"), new PostSignInHandler(cognitoClient)
+                new RouteKey("POST", "/signin"), new PostSignInHandler(cognitoClient),
+                new RouteKey("POST", "/tables"), new PostTable(dynamoDB.getTable(System.getenv("tables_table"))),
+                new RouteKey("GET", "/tables"), new GetTables(dynamoDB.getTable(System.getenv("tables_table"))),
+                new RouteKey("GET", "/tables/{tableId}"), new GetTablesById(dynamoDB.getTable(System.getenv("tables_table"))),
+                new RouteKey("POST", "/reservations"), new PostReservation(dynamoDB.getTable(System.getenv("tables_table")), dynamoDB.getTable(System.getenv("reservations_table"))),
+                new RouteKey("GET", "/reservations"), new GetReservation(dynamoDB.getTable(System.getenv("reservations_table")))
         );
     }
 

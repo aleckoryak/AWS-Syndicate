@@ -233,6 +233,7 @@ syndicate generate meta api_gateway_authorizer --api_name task11_api --name task
 syndicate generate meta api_gateway_resource --api_name task11_api --path signup --enable_cors false
 syndicate generate meta api_gateway_resource --api_name task11_api --path signin --enable_cors false
 syndicate generate meta api_gateway_resource --api_name task11_api --path tables --enable_cors false
+syndicate generate meta api_gateway_resource --api_name task11_api --path "tables/{tableId}" --enable_cors false
 syndicate generate meta api_gateway_resource --api_name task11_api --path reservations  --enable_cors false
 
 ```
@@ -243,6 +244,7 @@ syndicate generate meta api_gateway_resource_method --api_name task11_api --path
 
 syndicate generate meta api_gateway_resource_method --api_name task11_api --path tables --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
 syndicate generate meta api_gateway_resource_method --api_name task11_api --path tables --method GET --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
+syndicate generate meta api_gateway_resource_method --api_name task11_api --path "tables/{tableId}" --method GET --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
 
 syndicate generate meta api_gateway_resource_method --api_name task11_api --path reservations --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
 syndicate generate meta api_gateway_resource_method --api_name task11_api --path reservations --method GET --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1
