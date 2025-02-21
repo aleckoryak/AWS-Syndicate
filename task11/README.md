@@ -283,19 +283,63 @@ syndicate update  --replace_output --force -b task11_250219.103524 -types lambda
 ---
 
 ### Verification
-1. Check AWS Lambda Console:
-+ Confirm that the Lambda function is listed in the AWS Lambda Console.
-+ Verify that there are no deployment errors.
+```curl
+curl --location 'https://ev97tabc68.execute-api.eu-central-1.amazonaws.com/api/signup' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "firstName": "alec",
+      "lastName": "kor",
+      "email": "alec@gmail.com",
+      "password": "QaZ!12345677"
+}'
+```
 
-2. Check Lambda Layer Console:
-+ Confirm that the Lambda Layer is listed in the AWS Lambda Console.
-+ Verify that the SDK code is correctly organized and accessible.
+```curl
+curl --location 'https://ev97tabc68.execute-api.eu-central-1.amazonaws.com/api/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+      "email": "alec@gmail.com",
+      "password": "QaZ!12345677"
+}'
+```
+```curl
+curl --location 'https://ev97tabc68.execute-api.eu-central-1.amazonaws.com/api/tables' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJraWQiOiJ0d0VJc2xsYzVMQ1NRaDJYdjNYUnhKXC9abmVkQ0NHN2VhTU4rNlh5TDNGWT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI3Mzc0YTg1Mi1iMDgxLTcwZTctNjcxNi02ZDk4YmZkYTk5YzciLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LWNlbnRyYWwtMS5hbWF6b25hd3MuY29tXC9ldS1jZW50cmFsLTFfamVXUUNNNGlXIiwiY29nbml0bzp1c2VybmFtZSI6ImFsZWNAZ21haWwuY29tIiwiZ2l2ZW5fbmFtZSI6ImFsZWMiLCJvcmlnaW5fanRpIjoiODI3N2M1YTQtZjIyNS00ZmNkLWFiZGQtMDFmN2Q5OTFlMjhlIiwiYXVkIjoiNGYwNGlya2JvbGw3cXBvamxwbjhoNzAzYnAiLCJldmVudF9pZCI6ImIwOTM0MTA0LTcwOTMtNDRhOS05MWNmLTZhYzg4MWI3MjE1ZCIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNzQwMTA4NDg0LCJleHAiOjE3NDAxMTIwODQsImlhdCI6MTc0MDEwODQ4NCwiZmFtaWx5X25hbWUiOiJrb3IiLCJqdGkiOiI5ZmJiN2ZkNC01NDI1LTQ2MzctYjU4OS03N2RhNGQ3NGZiZDgiLCJlbWFpbCI6ImFsZWNAZ21haWwuY29tIn0.Tj17jq6mcQyO9l0cn8pSqBMdh_dCGK2M5Ui_V-wosA04yGhRfOWHRf1JR-a6e2_wStKAa7jG3cyVbuaeCrSe8_69GdJ7cfZvjMEW2USjIq0mQiV2XffP0O7nF2B5H7Ij7QE4jo8-meZQKYToI7ryCRRyGmHTeXaPitdxRRWSDOfIzED59-cBhloLzj366GBM26zQoGdpWbgaXHFUbY0tmXK4uXJDCk3ufsHwi2PQWVwve6VEGFQ4BpgqselLMgHOJt0MrnTzF6K9EJlliIxghM1V5gP418LpO6QpJHuzLRYzCtd2WWIERDR3ULrgrw2L4RQSlHoXIDzdAsojMa_qEA' \
+--data '{
+         "id": 2,
+         "number": 2,
+         "places": 4,
+         "isVip": false,
+         "minOrder": 1
+     }'
+```
 
-3. API Client Request:
+```curl
+curl --location 'https://ev97tabc68.execute-api.eu-central-1.amazonaws.com/api/tables' \
+--header 'Authorization: Bearer eyJraWQiOiJveThkVFVKNWhJamJZa3V2eEJZVHkyUkFDZFpNQytuOUd6UDhiVUVYRlZnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI0M2M0NzhlMi0zMGYxLTcwMzgtMGUwNS00NmVkN2ZjZWVlZmQiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LWNlbnRyYWwtMS5hbWF6b25hd3MuY29tXC9ldS1jZW50cmFsLTFfb3Z4dkJ2VkFwIiwiY29nbml0bzp1c2VybmFtZSI6ImFsZWNAZ21haWwuY29tIiwiZ2l2ZW5fbmFtZSI6ImFsZWMiLCJvcmlnaW5fanRpIjoiN2Q5NWYzMzgtYTJmOC00NjBkLWJjNDItYzc4NWI0YTliOTJlIiwiYXVkIjoiM3Y1djBjaGI3dHQ0Y3MyZWJjYTNqczdmcW8iLCJldmVudF9pZCI6ImYwMGFmM2NhLThkYmEtNDEzNS04MjI0LTljYjFjMDZhNjkzNiIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNzQwMTA3MzQ3LCJleHAiOjE3NDAxMTA5NDcsImlhdCI6MTc0MDEwNzM0NywiZmFtaWx5X25hbWUiOiJrb3IiLCJqdGkiOiJmYjlhOTQ4Yy0xODIxLTRiNjktODNkYy1kMTQyNTk2ZDM3YTAiLCJlbWFpbCI6ImFsZWNAZ21haWwuY29tIn0.BNAFOR_npNC0nPLm0ohMSLGJzeCkpmqrc8Ntm_7SeVmB_XPfx1KkYKqKg-nh8xnUezYwYonGubzzWO7q2qDyJl3OKkenxedeJr0ipgv1R9SWk9iMhogkg1hPIa1_EjaQEJuchjNOJ38rza9t7xwsB4TqQBwTHnq7g3fpcxAZLHTPuTSTzmpmepWGv-OYI2zWoMgSQyyMB5ALT1HwSv-Tu46MJXfSGvRLkIUqRYV2iNz341Z9S5wI9rqMIlSOkrTMpVh2ibyy1W8-GkGvj_IIbbD_bPDdr0XTgBkKBFF6hVBojDCj9aOXKvmg2Sma8sSc_UDl_hO6osPy5Ab2PWIYcQ'
+```
 
-+ Use your chosen API client (Postman, Insomnia) to send a GET request to the function URL (/weather) of the Lambda function.
-+ Verify that the response contains the latest weather forecast fetched using the SDK from the Lambda Layer.
+```curl
+curl --location 'https://ev97tabc68.execute-api.eu-central-1.amazonaws.com/api/tables/2/' \
+--header 'Authorization: Bearer eyJraWQiOiJ0d0VJc2xsYzVMQ1NRaDJYdjNYUnhKXC9abmVkQ0NHN2VhTU4rNlh5TDNGWT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI3Mzc0YTg1Mi1iMDgxLTcwZTctNjcxNi02ZDk4YmZkYTk5YzciLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LWNlbnRyYWwtMS5hbWF6b25hd3MuY29tXC9ldS1jZW50cmFsLTFfamVXUUNNNGlXIiwiY29nbml0bzp1c2VybmFtZSI6ImFsZWNAZ21haWwuY29tIiwiZ2l2ZW5fbmFtZSI6ImFsZWMiLCJvcmlnaW5fanRpIjoiODI3N2M1YTQtZjIyNS00ZmNkLWFiZGQtMDFmN2Q5OTFlMjhlIiwiYXVkIjoiNGYwNGlya2JvbGw3cXBvamxwbjhoNzAzYnAiLCJldmVudF9pZCI6ImIwOTM0MTA0LTcwOTMtNDRhOS05MWNmLTZhYzg4MWI3MjE1ZCIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNzQwMTA4NDg0LCJleHAiOjE3NDAxMTIwODQsImlhdCI6MTc0MDEwODQ4NCwiZmFtaWx5X25hbWUiOiJrb3IiLCJqdGkiOiI5ZmJiN2ZkNC01NDI1LTQ2MzctYjU4OS03N2RhNGQ3NGZiZDgiLCJlbWFpbCI6ImFsZWNAZ21haWwuY29tIn0.Tj17jq6mcQyO9l0cn8pSqBMdh_dCGK2M5Ui_V-wosA04yGhRfOWHRf1JR-a6e2_wStKAa7jG3cyVbuaeCrSe8_69GdJ7cfZvjMEW2USjIq0mQiV2XffP0O7nF2B5H7Ij7QE4jo8-meZQKYToI7ryCRRyGmHTeXaPitdxRRWSDOfIzED59-cBhloLzj366GBM26zQoGdpWbgaXHFUbY0tmXK4uXJDCk3ufsHwi2PQWVwve6VEGFQ4BpgqselLMgHOJt0MrnTzF6K9EJlliIxghM1V5gP418LpO6QpJHuzLRYzCtd2WWIERDR3ULrgrw2L4RQSlHoXIDzdAsojMa_qEA'
+```
 
-4. CloudWatch Logs:
+```curl
+curl --location 'https://ev97tabc68.execute-api.eu-central-1.amazonaws.com/api/reservations' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJraWQiOiJ0d0VJc2xsYzVMQ1NRaDJYdjNYUnhKXC9abmVkQ0NHN2VhTU4rNlh5TDNGWT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI3Mzc0YTg1Mi1iMDgxLTcwZTctNjcxNi02ZDk4YmZkYTk5YzciLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LWNlbnRyYWwtMS5hbWF6b25hd3MuY29tXC9ldS1jZW50cmFsLTFfamVXUUNNNGlXIiwiY29nbml0bzp1c2VybmFtZSI6ImFsZWNAZ21haWwuY29tIiwiZ2l2ZW5fbmFtZSI6ImFsZWMiLCJvcmlnaW5fanRpIjoiODI3N2M1YTQtZjIyNS00ZmNkLWFiZGQtMDFmN2Q5OTFlMjhlIiwiYXVkIjoiNGYwNGlya2JvbGw3cXBvamxwbjhoNzAzYnAiLCJldmVudF9pZCI6ImIwOTM0MTA0LTcwOTMtNDRhOS05MWNmLTZhYzg4MWI3MjE1ZCIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNzQwMTA4NDg0LCJleHAiOjE3NDAxMTIwODQsImlhdCI6MTc0MDEwODQ4NCwiZmFtaWx5X25hbWUiOiJrb3IiLCJqdGkiOiI5ZmJiN2ZkNC01NDI1LTQ2MzctYjU4OS03N2RhNGQ3NGZiZDgiLCJlbWFpbCI6ImFsZWNAZ21haWwuY29tIn0.Tj17jq6mcQyO9l0cn8pSqBMdh_dCGK2M5Ui_V-wosA04yGhRfOWHRf1JR-a6e2_wStKAa7jG3cyVbuaeCrSe8_69GdJ7cfZvjMEW2USjIq0mQiV2XffP0O7nF2B5H7Ij7QE4jo8-meZQKYToI7ryCRRyGmHTeXaPitdxRRWSDOfIzED59-cBhloLzj366GBM26zQoGdpWbgaXHFUbY0tmXK4uXJDCk3ufsHwi2PQWVwve6VEGFQ4BpgqselLMgHOJt0MrnTzF6K9EJlliIxghM1V5gP418LpO6QpJHuzLRYzCtd2WWIERDR3ULrgrw2L4RQSlHoXIDzdAsojMa_qEA' \
+--data '{
+         "tableNumber": 2,
+         "clientName": "alec",
+         "phoneNumber": "+2-23456435",
+         "date": "2025-04-01",
+         "slotTimeStart": "13:00",
+         "slotTimeEnd": "15:00"
+     }'
+```
 
-+ Check the CloudWatch Logs for the Lambda function to ensure there are no errors logged during the execution.
+```curl
+curl --location 'https://ev97tabc68.execute-api.eu-central-1.amazonaws.com/api/reservations' \
+--header 'Authorization: Bearer eyJraWQiOiJ0d0VJc2xsYzVMQ1NRaDJYdjNYUnhKXC9abmVkQ0NHN2VhTU4rNlh5TDNGWT0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI3Mzc0YTg1Mi1iMDgxLTcwZTctNjcxNi02ZDk4YmZkYTk5YzciLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LWNlbnRyYWwtMS5hbWF6b25hd3MuY29tXC9ldS1jZW50cmFsLTFfamVXUUNNNGlXIiwiY29nbml0bzp1c2VybmFtZSI6ImFsZWNAZ21haWwuY29tIiwiZ2l2ZW5fbmFtZSI6ImFsZWMiLCJvcmlnaW5fanRpIjoiODI3N2M1YTQtZjIyNS00ZmNkLWFiZGQtMDFmN2Q5OTFlMjhlIiwiYXVkIjoiNGYwNGlya2JvbGw3cXBvamxwbjhoNzAzYnAiLCJldmVudF9pZCI6ImIwOTM0MTA0LTcwOTMtNDRhOS05MWNmLTZhYzg4MWI3MjE1ZCIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNzQwMTA4NDg0LCJleHAiOjE3NDAxMTIwODQsImlhdCI6MTc0MDEwODQ4NCwiZmFtaWx5X25hbWUiOiJrb3IiLCJqdGkiOiI5ZmJiN2ZkNC01NDI1LTQ2MzctYjU4OS03N2RhNGQ3NGZiZDgiLCJlbWFpbCI6ImFsZWNAZ21haWwuY29tIn0.Tj17jq6mcQyO9l0cn8pSqBMdh_dCGK2M5Ui_V-wosA04yGhRfOWHRf1JR-a6e2_wStKAa7jG3cyVbuaeCrSe8_69GdJ7cfZvjMEW2USjIq0mQiV2XffP0O7nF2B5H7Ij7QE4jo8-meZQKYToI7ryCRRyGmHTeXaPitdxRRWSDOfIzED59-cBhloLzj366GBM26zQoGdpWbgaXHFUbY0tmXK4uXJDCk3ufsHwi2PQWVwve6VEGFQ4BpgqselLMgHOJt0MrnTzF6K9EJlliIxghM1V5gP418LpO6QpJHuzLRYzCtd2WWIERDR3ULrgrw2L4RQSlHoXIDzdAsojMa_qEA'
+```
