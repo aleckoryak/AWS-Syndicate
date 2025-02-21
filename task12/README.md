@@ -309,6 +309,13 @@ syndicate generate meta s3_bucket --resource_name api-ui-hoster --location eu-ce
  --ignore_public_acls true `
  --block_public_policy true `
  --restrict_public_buckets true 
+ 
+ 
+ syndicate generate meta s3_bucket --resource_name api-ui-hoster --location eu-central-1 --acl private --static_website_hosting true `
+ --block_public_acls false `
+ --ignore_public_acls false `
+ --block_public_policy false `
+ --restrict_public_buckets false 
  ```
 
 `Important notice`
