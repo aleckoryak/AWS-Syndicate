@@ -55,8 +55,22 @@ public class PostReservation implements RequestHandler<APIGatewayProxyRequestEve
                         .withBody("{\"error\": \"Invalid input data provided.\"}");
             }
 
-            // Check for table exists
+            // Check for table exists not by id but by number
             logger.log("PostReservation: validate table exists");
+            ScanSpec isExistSpec = new ScanSpec()
+                    .withFilterExpression("#num = :number")
+                    .withNameMap(new NameMap().with("#num", "number"))
+                    .withValueMap(new ValueMap().withNumber(":number", tableNumber));
+
+            if (!table.scan(isExistSpec).iterator().hasNext()) {
+                JSONObject responseBody = new JSONObject().put("error", "Table not found with Number: " + tableNumber);
+                return new APIGatewayProxyResponseEvent()
+                        .withStatusCode(400) // SC_BAD_REQUEST is typically from HttpServletResponse, in Lambda we use the status codes directly
+                        .withBody(responseBody.toString());
+            }
+
+
+/*
             GetItemSpec isExistSpec = new GetItemSpec().withPrimaryKey("id", tableNumber);
             Item isExistItem = table.getItem(isExistSpec);
 
@@ -65,7 +79,7 @@ public class PostReservation implements RequestHandler<APIGatewayProxyRequestEve
                 return new APIGatewayProxyResponseEvent()
                         .withStatusCode(SC_BAD_REQUEST)
                         .withBody(responseBody.toString());
-            }
+            }*/
 
             // Check for conflicting reservations
             logger.log("PostReservation: validate reservation");
@@ -88,7 +102,7 @@ public class PostReservation implements RequestHandler<APIGatewayProxyRequestEve
             String reservationId = UUID.randomUUID().toString();
 
             Item item = new Item()
-                    .withPrimaryKey("reservationId", reservationId)
+                    .withPrimaryKey("id", reservationId)
                     .withNumber("tableNumber", tableNumber)
                     .withString("clientName", clientName)
                     .withString("phoneNumber", phoneNumber)
