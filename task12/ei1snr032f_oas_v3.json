@@ -425,10 +425,7 @@
           "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:905418349556:function:api_handler/invocations",
           "responses": {
             "default": {
-              "statusCode": "200",
-              "responseParameters": {
-                "method.response.header.Access-Control-Allow-Origin": "'*'"
-              }
+              "statusCode": "200"
             }
           },
           "passthroughBehavior": "when_no_match"
@@ -604,164 +601,164 @@
       }
     }
   },
-    "components": {
-      "schemas": {
-        "Empty": {
-          "title": "Empty Schema",
-          "type": "object"
-        },
-        "SignupRequest": {
-          "type": "object",
-          "required": ["email", "password"],
-          "properties": {
-            "email": {
-              "type": "string",
-              "format": "email"
-            },
-            "password": {
-              "type": "string"
-            }
-          }
-        },
-        "SignupResponse": {
-          "type": "object",
-          "properties": {
-            "message": {
-              "type": "string",
-              "example": "Sign-up process is successful"
-            }
-          }
-        },
-        "SigninRequest": {
-          "type": "object",
-          "required": ["email", "password"],
-          "properties": {
-            "email": {
-              "type": "string",
-              "format": "email"
-            },
-            "password": {
-              "type": "string"
-            }
-          }
-        },
-        "SigninResponse": {
-          "type": "object",
-          "properties": {
-            "accessToken": {
-              "type": "string",
-              "description": "The token to be used in subsequent requests"
-            }
-          }
-        },
-        "Table": {
-          "type": "object",
-          "properties": {
-            "id": { "type": "integer" },
-            "number": { "type": "integer" },
-            "places": { "type": "integer" },
-            "isVip": { "type": "boolean" },
-            "minOrder": {
-              "type": "number",
-              "nullable": true
-            }
-          }
-        },
-        "GetTablesResponse": {
-          "type": "object",
-          "properties": {
-            "tables": {
-              "type": "array",
-              "items": { "$ref": "#/components/schemas/Table" }
-            }
-          }
-        },
-        "CreateTableRequest": {
-          "type": "object",
-          "required": ["id", "number", "places", "isVip"],
-          "properties": {
-            "id": { "type": "integer" },
-            "number": { "type": "integer" },
-            "places": { "type": "integer" },
-            "isVip": { "type": "boolean" },
-            "minOrder": {
-              "type": "number",
-              "nullable": true
-            }
-          }
-        },
-        "CreateTableResponse": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "integer",
-              "description": "The ID of the created table"
-            }
-          }
-        },
-        "Reservation": {
-          "type": "object",
-          "properties": {
-            "id": { "type": "string" },
-            "tableNumber": { "type": "integer" },
-            "clientName": { "type": "string" },
-            "phoneNumber": { "type": "string" },
-            "date": {
-              "type": "string",
-              "format": "date"
-            },
-            "slotTimeStart": { "type": "string" },
-            "slotTimeEnd": { "type": "string" }
-          }
-        },
-        "GetReservationsResponse": {
-          "type": "object",
-          "properties": {
-            "reservations": {
-              "type": "array",
-              "items": { "$ref": "#/components/schemas/Reservation" }
-            }
-          }
-        },
-        "CreateReservationRequest": {
-          "type": "object",
-          "required": [
-            "tableNumber",
-            "clientName",
-            "phoneNumber",
-            "date",
-            "slotTimeStart",
-            "slotTimeEnd"
-          ],
-          "properties": {
-            "tableNumber": { "type": "integer" },
-            "clientName": { "type": "string" },
-            "phoneNumber": { "type": "string" },
-            "date": {
-              "type": "string",
-              "format": "date"
-            },
-            "slotTimeStart": { "type": "string" },
-            "slotTimeEnd": { "type": "string" }
-          }
-        },
-        "CreateReservationResponse": {
-          "type": "object",
-          "properties": {
-            "reservationId": {
-              "type": "string",
-              "description": "The ID of the created reservation"
-            }
-          }
-        },
-        "ErrorResponse": {
-          "type": "object",
-          "properties": {
-            "error": { "type": "string" },
-            "message": { "type": "string" }
+  "components": {
+    "schemas": {
+      "Empty": {
+        "title": "Empty Schema",
+        "type": "object"
+      },
+      "SignupRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
           }
         }
       },
+      "SignupResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Sign-up process is successful"
+          }
+        }
+      },
+      "SigninRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "SigninResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "The token to be used in subsequent requests"
+          }
+        }
+      },
+      "Table": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "number": { "type": "integer" },
+          "places": { "type": "integer" },
+          "isVip": { "type": "boolean" },
+          "minOrder": {
+            "type": "number",
+            "nullable": true
+          }
+        }
+      },
+      "GetTablesResponse": {
+        "type": "object",
+        "properties": {
+          "tables": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Table" }
+          }
+        }
+      },
+      "CreateTableRequest": {
+        "type": "object",
+        "required": ["id", "number", "places", "isVip"],
+        "properties": {
+          "id": { "type": "integer" },
+          "number": { "type": "integer" },
+          "places": { "type": "integer" },
+          "isVip": { "type": "boolean" },
+          "minOrder": {
+            "type": "number",
+            "nullable": true
+          }
+        }
+      },
+      "CreateTableResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The ID of the created table"
+          }
+        }
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "tableNumber": { "type": "integer" },
+          "clientName": { "type": "string" },
+          "phoneNumber": { "type": "string" },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "slotTimeStart": { "type": "string" },
+          "slotTimeEnd": { "type": "string" }
+        }
+      },
+      "GetReservationsResponse": {
+        "type": "object",
+        "properties": {
+          "reservations": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Reservation" }
+          }
+        }
+      },
+      "CreateReservationRequest": {
+        "type": "object",
+        "required": [
+          "tableNumber",
+          "clientName",
+          "phoneNumber",
+          "date",
+          "slotTimeStart",
+          "slotTimeEnd"
+        ],
+        "properties": {
+          "tableNumber": { "type": "integer" },
+          "clientName": { "type": "string" },
+          "phoneNumber": { "type": "string" },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "slotTimeStart": { "type": "string" },
+          "slotTimeEnd": { "type": "string" }
+        }
+      },
+      "CreateReservationResponse": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "description": "The ID of the created reservation"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    },
     "securitySchemes": {
       "task12_api_gateway_authorizer": {
         "type": "apiKey",
