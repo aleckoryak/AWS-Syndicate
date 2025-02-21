@@ -309,10 +309,7 @@ syndicate generate meta s3_bucket --resource_name api-ui-hoster --location eu-ce
  --ignore_public_acls true `
  --block_public_policy true `
  --restrict_public_buckets true 
- 
- 
- 
-```
+ ```
 
 `Important notice`
    
@@ -328,6 +325,13 @@ To enable personal access to the Swagger UI:
 + Retrieve your public IP address (for example from a website such as https://www.whatismyip.com/).
 + Place 'YOUR_PUBLIC_IP/32' in the 'aws:SourceIp' field of the S3 bucket statement condition, where 'YOUR_PUBLIC_IP' is your public IP address.
 
+5. Add Swagger UI Resource to Deployment Resources:
+
++ Ensure your OpenAPI specification (OAS v3) is stored inside the 'task12' project directory.
++ Generate [metadata for the Swagger UI](https://github.com/epam/aws-syndicate/wiki/4.-Resources-Meta-Descriptions#427-swagger-ui) resource.
+```powershell
+syndicate generate swagger_ui --name task12_api_ui --path_to_spec "./ei1snr032f_oas_v3.json" --target_bucket api-ui-hoster
+```
 ---
 ### Verification
 ```curl
