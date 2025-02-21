@@ -17,13 +17,39 @@
   "paths": {
     "/reservations": {
       "get": {
+        "summary" : "Get reservations",
+        "description": "Get reservations",
         "responses": {
           "200": {
             "description": "200 response",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/ReservationsList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -239,8 +265,188 @@
   "components": {
     "schemas": {
       "Empty": {
-        "title": "Empty Schema",
+        "title": "400 Bad Request (There was an error in the request.)",
         "type": "object"
+      },
+      "Error": {
+        "title": "Empty Schema",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "Table": {
+        "title": "Table Object",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "number": {
+            "type": "number"
+          },
+          "places": {
+            "type": "number"
+          },
+          "isVip": {
+            "type": "boolean"
+          },
+          "minOrder": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "places",
+          "isVip"
+        ]
+      },
+      "User": {
+        "title": "User Object",
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "email",
+          "password"
+        ]
+      },
+      "UserPass": {
+        "title": "User Object",
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "UserAuthResponse": {
+        "title": "UserPass response Object",
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "Reservation": {
+        "title": "Reservation Object",
+        "type": "object",
+        "properties": {
+          "tableNumber": {
+            "type": "number",
+            "description": "number of the table"
+          },
+          "clientName": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "description": "yyyy-MM-dd format"
+          },
+          "slotTimeStart": {
+            "type": "string",
+            "description": "string in HH:MM format, like 13:00"
+          },
+          "slotTimeEnd": {
+            "type": "string",
+            "description": "string in HH:MM format, like 15:00"
+          }
+        },
+        "required": [
+          "tableNumber",
+          "clientName",
+          "phoneNumber",
+          "date",
+          "slotTimeStart",
+          "slotTimeEnd"
+        ]
+      },
+      "ReservationId": {
+        "title": "ReservationId",
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "reservationId"
+        ]
+      },
+      "ReservationsList": {
+        "title": "Reservations List",
+        "type": "object",
+        "properties": {
+          "reservations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/Reservation"
+            }
+          }
+        },
+        "required": [
+          "reservations"
+        ]
+      },
+      "TableId": {
+        "title": "TableId",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "TablesList": {
+        "title": "Tables List",
+        "type": "object",
+        "properties": {
+          "tables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/Table"
+            }
+          }
+        },
+        "required": [
+          "tables"
+        ]
       }
     },
     "securitySchemes": {
@@ -250,9 +456,7 @@
         "in": "header",
         "x-amazon-apigateway-authtype": "cognito_user_pools",
         "x-amazon-apigateway-authorizer": {
-          "providerARNs": [
-            "arn:aws:cognito-idp:eu-central-1:905418349556:userpool/eu-central-1_jeWQCM4iW"
-          ],
+          "x-syndicate-cognito-userpool-names": ["${booking_userpool}"],
           "type": "cognito_user_pools"
         }
       }

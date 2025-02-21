@@ -7,6 +7,8 @@ To deploy a serverless API with the specified resources using AWS Lambda, Dynamo
 ### Resources Names
 + Lambda Function: `api_handler` | lambdas_alias_name: learn
 + Cognito UserPool: `simple-booking-userpool` | booking_userpool: simple-booking-userpool
++ Swagger UI: task12_api_ui
++ S3 website hosting: api-ui-hoster
 + API Gateway:
   + API Name: task12_api | Stage Name: api
   + /signup POST 
@@ -15,7 +17,6 @@ To deploy a serverless API with the specified resources using AWS Lambda, Dynamo
   + /tables GET 
   + /reservations POST 
   + /reservations GET
-
 + DynamoDB Table
   + Tables | reservations_table: Reservations
   + Reservations | reservations_table: Reservations
@@ -23,8 +24,6 @@ To deploy a serverless API with the specified resources using AWS Lambda, Dynamo
 ### Additional resources
 + https://github.com/epam/aws-syndicate/tree/master/examples/java/demo-apigateway-cognito
 
-business goals, desision making. fr, nfr
-45 o2 15.00
 AWS User Pool tokens have different roles: the identity token (ID token) authenticates users to resource servers, and the access token authorizes API operations. For example, use the ID token to call an API with Cognito as the authorizer in AWS API Gateway, and the access token to allow users to modify attributes; their headers are similar, but they use different keys. Essentially, in the case of Cognito the ID token should be used as value of accessToken in the /signin response.
 
 ## Example
@@ -276,11 +275,60 @@ syndicate build -F -b task12_250221.120718
 ```powershell
 syndicate deploy --replace_output -b task12_250221.120718 -types lambda
 
-syndicate update  --replace_output --force -b task12_250221.120718 -types lambda
+syndicate update --replace_output --force -b task12_250221.120718 -types api_gateway
+```
+---
+### Swagger
+1. Export to OAS v3: By default, the file will be saved to sub-folder "export" of your project folder.
+```shell
+syndicate export --resource_type api_gateway --dsl oas_v3
+```
+2. Resolve Resource Definition Duplication:
++ Remove resource named 'task12_api' of type 'api_gateway' from the deployment_resources.json file. Removing this resource ensures that the outdated API Gateway configuration is not included in the deployment process for Task 11.
+
+3. Enhance Documentation:
++ Add request and response schemas to the OpenAPI specification.
++  Document possible errors thrown.
++  Add summary and description to resource methods.
++  Update the security schema:
+  + Identify the "securitySchemes" section within the OAS file, where the API Gateway security schema is defined
+  + Locate the specific security scheme object named "x-amazon-apigateway-authorizer" within the "securitySchemes" section
+  + Within the "x-amazon-apigateway-authorizer" object, replace the existing "providerARNs" property with "x-syndicate-cognito-userpool-names": ["cognito_userpool_name"]
+
+UserPool's ARN is not available at the time of deployment provisioning, so replacing the "providerARNs" property with a placeholder for the Cognito UserPool name simplifies deployment process.
+
+This placeholder is later replaced with the actual ARN during deployment, making the integration smoother.
+
+You can find more details on Security Schema for OAS Document [here](https://github.com/epam/aws-syndicate/wiki/4.-Resources-Meta-Descriptions#security-schema-for-oas-document).
+
+4. Add S3 Bucket for Swagger UI Hosting:
++ Generate [metadata for an S3 bucket](https://github.com/epam/aws-syndicate/wiki/4.-Resources-Meta-Descriptions#44-s3-bucket) suitable for hosting a static website, which will be used to serve the Swagger UI.
+```powershell
+syndicate generate meta s3_bucket --resource_name api-ui-hoster --location eu-central-1 --acl private --static_website_hosting true `
+ --block_public_acls true `
+ --ignore_public_acls true `
+ --block_public_policy true `
+ --restrict_public_buckets true 
+ 
+ 
+ 
 ```
 
----
+`Important notice`
+   
+Deploying S3 buckets with public access in the sandbox account is prohibited.
+To ensure compliance during the verification process:
 
++ Don't enable public access when creating S3 bucket metadata and in the generated metadata.
++ Update the IP address placeholder in the S3 bucket statement condition from 'XXX.XXX.XXX.XXX/32' to '18.197.177.98/32'.
+
+To enable personal access to the Swagger UI:
+
++ Connect to EPAM VPN.
++ Retrieve your public IP address (for example from a website such as https://www.whatismyip.com/).
++ Place 'YOUR_PUBLIC_IP/32' in the 'aws:SourceIp' field of the S3 bucket statement condition, where 'YOUR_PUBLIC_IP' is your public IP address.
+
+---
 ### Verification
 ```curl
 curl --location 'https://ev97tabc68.execute-api.eu-central-1.amazonaws.com/api/signup' \
