@@ -311,7 +311,7 @@ syndicate generate meta s3_bucket --resource_name api-ui-hoster --location eu-ce
  --restrict_public_buckets true 
  
  
- syndicate generate meta s3_bucket --resource_name api-ui-hoster --location eu-central-1 --acl private --static_website_hosting true `
+ syndicate generate meta s3_bucket --resource_name api-ui-hoster --location eu-central-1 --acl public-read --static_website_hosting true `
  --block_public_acls false `
  --ignore_public_acls false `
  --block_public_policy false `
